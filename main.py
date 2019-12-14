@@ -31,7 +31,7 @@ parser.add_argument('--imageSize', type=int, default=64, help='image dimension (
 parser.add_argument('--nc', type=int, default=3, help='number of image channels, default=3')
 parser.add_argument('--ndf', type=int, default=64, help='Size of feature maps in Classifier, default=64')
 parser.add_argument('--lr', type=float, default=0.0001, help='classifier Learning rate, default=0.0001')
-parser.add_argument('--beta1', type=float, default=0.5, helps='beta1 hyperparameter for Adam optimizers, default=0.5')
+parser.add_argument('--beta1', type=float, default=0.5, help='beta1 hyperparameter for Adam optimizers, default=0.5')
 parser.add_argument('--beta2', type=float, default=0.999, help='beta1 hyperparameter for Adam optimizers, default=0.999')
 params = parser.parse_args()
 
