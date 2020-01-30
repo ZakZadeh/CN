@@ -90,3 +90,46 @@ class ResNet(nn.Module):
         x = self.resnet(x)
         x = self.fc1(x)
         return x
+    
+class ResNet3D(nn.Module):
+    def __init__(self, params):
+        super(ResNet3D, self).__init__()
+        self.nClass = params.nClass
+        self.resnet = nn.Sequential(
+            torchvision.models.video.r3d_18(pretrained=True, progress=True),
+            nn.ReLU(True)
+        )
+        # net = nn.Sequential(*list(net.children())[:2])
+        self.fc1 = nn.Sequential(
+            nn.Linear(400, 64),
+            nn.ReLU(True)
+        )
+        self.fc2 = nn.Sequential(
+            nn.Linear(64, self.nClass),
+        )
+    def forward(self, x):
+        x = self.resnet(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+class ResNet2p1D(nn.Module):
+    def __init__(self, params):
+        super(ResNet2p1D, self).__init__()
+        self.nClass = params.nClass
+        self.resnet = nn.Sequential(
+            torchvision.models.video.r2plus1d_18(pretrained=True, progress=True),
+            nn.ReLU(True)
+        )
+        # net = nn.Sequential(*list(net.children())[:2])
+        self.fc1 = nn.Sequential(
+            nn.Linear(400, 64),
+            nn.ReLU(True)
+        )
+        self.fc2 = nn.Sequential(
+            nn.Linear(64, self.nClass),
+        )
+    def forward(self, x):
+        x = self.resnet(x)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x

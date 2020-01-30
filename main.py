@@ -18,14 +18,14 @@ import utils
 """ -------------------------------------------------------------------------"""
 """ Parameters """
 parser = argparse.ArgumentParser(description = 'Convolutional Neural Net')
-parser.add_argument('--path', type=str, default='/data/zak/', help='dataset path')
-parser.add_argument('--datasetName', type=str, default='cifar10', help='dataset name: mnist, f_mnist, cifar10, kth, hmdb, ucf101, ball_drop')
-parser.add_argument('--model', type=str, default='custom', help='Neural net model: custom, mobilenet, resnet; default=custom')
+parser.add_argument('--path', type=str, default='/data/chs/dataset/', help='dataset path')
+parser.add_argument('--datasetName', type=str, default='ballDrop3', help='dataset name: mnist, f_mnist, cifar10, image, ucf101, balldrop3')
+parser.add_argument('--model', type=str, default='resnet3d', help='Neural net model: custom, mobilenet, resnet; default=custom')
 parser.add_argument('--nEpochs', type=int, default=10, help='number of training epochs, default=1')
 parser.add_argument('--startEpoch', type=int, default=0, help='number of epochs of pretrained model, default=0')
 parser.add_argument('--nGPU', type=int, default=4, help='of GPUs available. Use 0 for CPU mode, default=0')
 parser.add_argument('--nBatch', type=int, default=128, help='Batch size, default=16')
-parser.add_argument('--nClass', type=int, default=10, help='number of classes, default=2')
+parser.add_argument('--nClass', type=int, default=3, help='number of classes, default=2')
 parser.add_argument('--imageSize', type=int, default=64, help='image dimension (weight & Height), default=64')
 parser.add_argument('--nc', type=int, default=3, help='number of image channels, default=3')
 parser.add_argument('--ndf', type=int, default=64, help='Size of feature maps in Classifier, default=64')
@@ -51,6 +51,10 @@ if (params.startEpoch == 0):
         net = model.VGG11(params).to(device)
     elif (params.model == 'resnet'):
         net = model.ResNet(params).to(device)
+    elif (params.model == 'resnet3d'):
+        net = model.ResNet3D(params).to(device)
+    elif (params.model == 'resnet2p1d'):
+        net = model.ResNet2p1D(params).to(device)
 
     if (device.type == 'cuda') and (params.nGPU > 1):
         net = nn.DataParallel(net, list(range(params.nGPU)))
@@ -82,7 +86,7 @@ for epoch in range(params.startEpoch, params.nEpochs):
     tstCorrect = 0
     for i, (data, label) in enumerate(trainLoader, 0):
         net.zero_grad()
-        # Format batch
+
         inData = data.to(device)
         batchSize = inData.size(0)
 
@@ -99,19 +103,18 @@ for epoch in range(params.startEpoch, params.nEpochs):
         trnLosses.append(err.item())
 
     for i, (data, label) in enumerate(testLoader, 0):
-        # Format batch
         inData = data.to(device)
         batchSize = inData.size(0)
         label = label.to(device)
 
         # Forward pass real batch through D
         output = net(inData)
-        labelPred = torch.max(func.softmax(output, dim = 1), 1)[1]
+        labelPred = torch.max(func.softmax(output, dim = 1), 1)[1] 
         tstCorrect += (labelPred == label).sum().item()
 
         tstTotal += batchSize
-        err = criterion(output, label)
-        testLosses.append(err.item())
+#         errTest = criterion(output, label)
+#         testLosses.append(errTest.item())
 
     trnAccuracy = (100 * trnCorrect) / trnTotal
     tstAccuracy = (100 * tstCorrect) / tstTotal
@@ -119,7 +122,7 @@ for epoch in range(params.startEpoch, params.nEpochs):
           % (epoch, params.nEpochs, i, len(trainLoader), err.item(), trnAccuracy))
     print('[%d/%d][%d/%d]\tTest Loss: %.4f\tTest Accuracy: %.4f'
           % (epoch, params.nEpochs, i, len(testLoader), err.item(), tstAccuracy))
-    utils.saveCkpt(net, optimizer, epoch, params)
+#     utils.saveCkpt(net, optimizer, epoch, params)
 
 """ -------------------------------------------------------------------------"""
 """ Results """
