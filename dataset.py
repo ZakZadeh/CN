@@ -10,7 +10,7 @@ def laod(params, mode):
     dataroot = params.path + name + '/'
     nWorkers = 3
     imageSize = params.imageSize
-    nFrames = 4
+    nFrames = 32
     
     if (mode == 'train'):
         if (name == 'mnist'):
@@ -75,7 +75,7 @@ def laod(params, mode):
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
         elif (name == 'ballDrop3'):
-            transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
+            transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(), transforms.Normalize((0, 0, 0), (1, 1, 1))])
             dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
     dataloader = data.DataLoader(dataset, batch_size = params.nBatch, shuffle = True, num_workers = nWorkers)
     return dataloader

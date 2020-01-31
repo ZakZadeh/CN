@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(description = 'Convolutional Neural Net')
 parser.add_argument('--path', type=str, default='/data/chs/dataset/', help='dataset path')
 parser.add_argument('--datasetName', type=str, default='ballDrop3', help='dataset name: mnist, f_mnist, cifar10, image, ucf101, balldrop3')
 parser.add_argument('--model', type=str, default='resnet3d', help='Neural net model: custom, mobilenet, resnet; default=custom')
-parser.add_argument('--nEpochs', type=int, default=10, help='number of training epochs, default=1')
+parser.add_argument('--nEpochs', type=int, default=100, help='number of training epochs, default=1')
 parser.add_argument('--startEpoch', type=int, default=0, help='number of epochs of pretrained model, default=0')
 parser.add_argument('--nGPU', type=int, default=4, help='of GPUs available. Use 0 for CPU mode, default=0')
 parser.add_argument('--nBatch', type=int, default=128, help='Batch size, default=16')
@@ -51,6 +51,8 @@ if (params.startEpoch == 0):
         net = model.VGG11(params).to(device)
     elif (params.model == 'resnet'):
         net = model.ResNet(params).to(device)
+    elif (params.model == 'custom3D'):
+        net = model.Custom3D(params).to(device)
     elif (params.model == 'resnet3d'):
         net = model.ResNet3D(params).to(device)
     elif (params.model == 'resnet2p1d'):
