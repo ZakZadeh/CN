@@ -57,22 +57,6 @@ class Custom(nn.Module):
         x = x.view(-1, self.ndf)
         x = self.fc1(x)
         return x
-    
-class MobileNet(nn.Module):
-    def __init__(self, params):
-        super(MobileNet, self).__init__()
-        self.nClass = params.nClass
-        self.resnet = nn.Sequential(
-            torchvision.models.mobilenet_v2(pretrained=True, progress=True),
-            nn.ReLU(True)
-        )
-        self.fc1 = nn.Sequential(
-            nn.Linear(128, self.nClass),
-        )
-    def forward(self, x):
-        x = self.resnet(x)
-        x = self.fc1(x)
-        return x
 
 class ResNet(nn.Module):
     def __init__(self, params):
@@ -84,11 +68,17 @@ class ResNet(nn.Module):
         )
         # net = nn.Sequential(*list(net.children())[:2])
         self.fc1 = nn.Sequential(
+            nn.Linear(1000, 128),
+            nn.ReLU(True)
+        )
+        
+        self.fc2 = nn.Sequential(
             nn.Linear(128, self.nClass),
         )
     def forward(self, x):
         x = self.resnet(x)
         x = self.fc1(x)
+        x = self.fc2(x)
         return x
     
 class Custom3D(nn.Module):
