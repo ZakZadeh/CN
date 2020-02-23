@@ -10,6 +10,7 @@ def laod(params, mode):
     dataroot = params.path + name + '/'
     nWorkers = 3
     imageSize = params.imageSize
+    nFrames = 16
     
     if (mode == 'train'):
         if (name == 'mnist'):
@@ -35,19 +36,23 @@ def laod(params, mode):
                                            transforms.ToTensor(),
                                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)), ])
             dataset = dset.ImageFolder(root = dataroot+'train/', transform = transform)
+        elif (name == 'kth'):
+            transformVideo = transforms.Compose([transforms.Resize(size = (params.imageSize, params.imageSize), 
+                                                                   interpolation = Image.NEAREST), transforms.ToTensor(),])
+            dataset = VideoFolder(video_root = dataroot+'train/', video_ext = '.png', nframes = nFrames, 
+                                  loader = videoLoader, transform = transformVideo)
+            params.nc = 1
+#             params.isInVideo = True
         elif (name == 'ucf101'):
-            nFrames = 16
             params.nClass = 101
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'train/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
         elif (name == 'hmdb51'):
-            nFrames = 16
             params.nClass = 51
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'train/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
         elif (name == 'ballDrop3'):
             params.nClass = 3
-            nFrames = 32
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'train/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
     else:
@@ -73,16 +78,18 @@ def laod(params, mode):
             dataset = dset.ImageFolder(root = dataroot+'test/', transform = transforms.Compose([transforms.Resize(params.imageSize),
                                            transforms.ToTensor(),
                                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)), ]))
+        elif (name == 'kth'):
+            transformVideo = transforms.Compose([transforms.Resize(size = (params.imageSize, params.imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
+            dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.png', nframes = nFrames, loader = videoLoader, transform = transformVideo)
+            params.nc = 1
+#             params.isInVideo = True
         elif (name == 'ucf101'):
-            nFrames = 16
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
         elif (name == 'hmdb51'):
-            nFrames = 16
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(),])
             dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
         elif (name == 'ballDrop3'):
-            nFrames = 32
             transformVideo = transforms.Compose([transforms.Resize(size = (imageSize, imageSize), interpolation = Image.NEAREST), transforms.ToTensor(), transforms.Normalize((0, 0, 0), (1, 1, 1))])
             dataset = VideoFolder(video_root = dataroot+'test/', video_ext = '.jpg', nframes = nFrames, loader = videoLoader, transform = transformVideo)
     dataloader = data.DataLoader(dataset, batch_size = params.nBatch, shuffle = True, num_workers = nWorkers)

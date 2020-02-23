@@ -6,6 +6,7 @@ import os
 import sys
 import subprocess
 import torch
+import shutil
 
 def load_value_file(file_path):
     with open(file_path, 'r') as input_file:
@@ -25,6 +26,11 @@ def copy(inPath, outPath):
 def sort(nameList, numKey):
     nameList.sort(key = numKey, reverse = false)
 
+def numericalSort(value):
+    parts = numbers.split(value)
+    parts[1::2] = map(int, parts[1::2])
+    return parts
+    
 def enumerateFiles(path, prefix='image_', type = 'jpg'):
     inImage = path + prefix + '*.' + type
     for img in sorted(glob.glob(inImage), key = numericalSort):
