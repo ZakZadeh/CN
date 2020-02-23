@@ -7,6 +7,8 @@ import sys
 import subprocess
 import torch
 import shutil
+import glob
+import re
 
 def load_value_file(file_path):
     with open(file_path, 'r') as input_file:
@@ -27,6 +29,7 @@ def sort(nameList, numKey):
     nameList.sort(key = numKey, reverse = false)
 
 def numericalSort(value):
+    numbers = re.compile(r'(\d+)')
     parts = numbers.split(value)
     parts[1::2] = map(int, parts[1::2])
     return parts
