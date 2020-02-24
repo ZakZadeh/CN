@@ -120,12 +120,19 @@ class Custom3D(nn.Module):
             nn.Linear(self.ndf, self.nClass),
         )
     def forward(self, x):
+        print(x.size())
         x = self.conv1(x)
+        print(x.size())
         x = self.conv2(x)
+        print(x.size())
         x = self.conv3(x)
+        print(x.size())
         x = self.conv4(x)
+        print(x.size())
         x = self.conv5(x)
+        print(x.size())
         x = x.view(-1, self.ndf)
+        print(x.size())
         x = self.fc1(x)
         return x
     
