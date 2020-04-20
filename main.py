@@ -20,14 +20,14 @@ import utils
 """ Parameters """
 parser = argparse.ArgumentParser(description = 'Convolutional Neural Net')
 parser.add_argument('--path', type=str, default='/data/zak/', help='dataset path')
-parser.add_argument('--datasetName', type=str, default='ballDrop3', help='dataset name: image, mnist, f_mnist, cifar10, kth, ucf101, hmdb51, ballDrop3')
+parser.add_argument('--datasetName', type=str, default='kth', help='dataset name: image, mnist, f_mnist, cifar10, kth, ucf101, hmdb51, ballDrop3')
 parser.add_argument('--model', type=str, default='custom3D', help='Neural net model: custom, resnet, custom3D, resnet3d; default=custom')
 parser.add_argument('--nEpochs', type=int, default=100, help='number of training epochs, default=1')
 parser.add_argument('--startEpoch', type=int, default=0, help='number of epochs of pretrained model, default=0')
 parser.add_argument('--nGPU', type=int, default=4, help='of GPUs available. Use 0 for CPU mode, default=0')
 parser.add_argument('--nBatch', type=int, default=256, help='Batch size, default=16')
 parser.add_argument('--imageSize', type=int, default=64, help='image dimension (weight & Height), default=64')
-parser.add_argument('--nFrames', type=int, default=32, help='num of video frames, default=32')
+parser.add_argument('--nFrames', type=int, default=16, help='num of video frames, default=32')
 parser.add_argument('--ndf', type=int, default=64, help='Size of feature maps in Classifier, default=64')
 parser.add_argument('--lr', type=float, default=0.0001, help='classifier Learning rate, default=0.0001')
 parser.add_argument('--beta1', type=float, default=0.5, help='beta1 hyperparameter for Adam optimizers, default=0.5')
@@ -89,21 +89,12 @@ for epoch in range(params.startEpoch, params.nEpochs):
     trnCorrect = 0
     tstCorrect = 0
     for i, (data, label) in enumerate(trainLoader, 0):
-        net.zero_grad()
-        
-#         if (params.isInVideo):
-#             real    = data.to(device)
-# #             past    = torch.squeeze(real[:,:,0,:,:], 2)
-#             past    = real[:,:,0:3,:,:]
-#             realIn  = torch.squeeze(real[:,:,3,:,:], 2)
-#         else:
-#             inData  = data.to(device)
-        
+        net.zero_grad()        
         inData = data.to(device)
+        inData = dataset.sample(inData, params)
         batchSize = inData.size(0)        
         label = label.to(device)
-
-        # Forward pass 
+#         # Forward pass 
         output = net(inData)
         labelPred = torch.max(func.softmax(output, dim = 1), 1)[1]
         trnCorrect += (labelPred == label).sum().item()
@@ -116,11 +107,13 @@ for epoch in range(params.startEpoch, params.nEpochs):
 
     for i, (data, label) in enumerate(testLoader, 0):
         inData = data.to(device)
+        inData = dataset.sample(inData, params)
         batchSize = inData.size(0)
         label = label.to(device)
-
+        
         # Forward pass real batch through D
         output = net(inData)
+        
         labelPred = torch.max(func.softmax(output, dim = 1), 1)[1] 
         tstCorrect += (labelPred == label).sum().item()
 
@@ -136,7 +129,7 @@ for epoch in range(params.startEpoch, params.nEpochs):
               % (epoch, params.nEpochs, err.item(), trnAccuracy))
         print('[%d/%d]\tTest Loss: %.4f\tTest Accuracy: %.4f'
               % (epoch, params.nEpochs, err.item(), tstAccuracy))
-    #     utils.saveCkpt(net, optimizer, epoch, params)
+        utils.saveCkpt(net, optimizer, epoch, params)
 
 """ -------------------------------------------------------------------------"""
 """ Results """

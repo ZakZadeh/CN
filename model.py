@@ -94,7 +94,7 @@ class Custom3D(nn.Module):
             ## state size. (ndf) x 32 x 32
         )
         self.conv2 = nn.Sequential(
-            nn.Conv3d(self.ndf, self.ndf * 2, 4, 2, 1, bias = False),
+            nn.Conv3d(self.ndf, self.ndf * 2, (4,4,4), (1,2,2), (1,1,1), bias = False),
             nn.BatchNorm3d(self.ndf * 2),
             nn.ReLU(True),
             ## state size. (ndf*2) x 16 x 16
