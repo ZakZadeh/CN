@@ -1,6 +1,6 @@
 """
-CNN
-Convolutional Neural Net for Image/Video Classification
+CN
+Convolutional Net for Image/Video Classification
 Developer: Zak Zadeh
 """
 
