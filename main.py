@@ -104,22 +104,22 @@ for epoch in range(params.startEpoch, params.nEpochs):
         err.backward()
         optimizer.step()
         trnLosses.append(err.item())
+    with torch.no_grad():
+        for i, (data, label) in enumerate(testLoader, 0):
+            inData = data.to(device)
+            inData = dataset.sample(inData, params)
+            batchSize = inData.size(0)
+            label = label.to(device)
 
-    for i, (data, label) in enumerate(testLoader, 0):
-        inData = data.to(device)
-        inData = dataset.sample(inData, params)
-        batchSize = inData.size(0)
-        label = label.to(device)
-        
-        # Forward pass real batch through D
-        output = net(inData)
-        
-        labelPred = torch.max(func.softmax(output, dim = 1), 1)[1] 
-        tstCorrect += (labelPred == label).sum().item()
+            # Forward pass real batch through D
+            output = net(inData)
 
-        tstTotal += batchSize
-#         errTest = criterion(output, label)
-#         testLosses.append(errTest.item())
+            labelPred = torch.max(func.softmax(output, dim = 1), 1)[1] 
+            tstCorrect += (labelPred == label).sum().item()
+
+            tstTotal += batchSize
+    #         errTest = criterion(output, label)
+    #         testLosses.append(errTest.item())
 
     trnAccuracy = (100 * trnCorrect) / trnTotal
     tstAccuracy = (100 * tstCorrect) / tstTotal
